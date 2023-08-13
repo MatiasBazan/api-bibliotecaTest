@@ -23,13 +23,14 @@ exports.getLibroById = async (req, res) => {
 
 exports.createLibro = async (req, res) => {
   try {
-    const nuevoLibro = await Libro.create(req.body);
-    await nuevoLibro.save();
-    res.status(201).json(nuevoLibro);
+    const nuevoLibro = req.body;
+    const libroCreado = await Libro.create(nuevoLibro); 
+    res.status(201).json(libroCreado);
   } catch (error) {
-    res.status(500).json({ error: "Error al crear el Libro" });
+    res.status(500).json({ error: "Error al crear el libro" });
   }
 };
+
 
 exports.updateLibro = async (req, res) => {
   try {
