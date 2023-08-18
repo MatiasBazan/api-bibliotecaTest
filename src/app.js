@@ -1,32 +1,39 @@
-const express = require("express");
-
-const { auth } = require("express-oauth2-jwt-bearer");
-const errorHandler = require("./middlewares/errorHandler");
-
-
+const express = require('express');
+const { auth } = require('express-oauth2-jwt-bearer');
+const errorHandler = require('./middlewares/errorHandler');
 require('dotenv').config();
 
-// Configuracion Middleware con el Servidor de Autorización 
+const app = express();
+
+// Configuración del Middleware de Autorización
 const autenticacion = auth({
   audience: process.env.OAUTH_AUDIENCE,
   issuerBaseURL: process.env.OAUTH_URL,
-  tokenSigningAlg: "RS256",
+  tokenSigningAlg: 'RS256',
 });
 
-
-const app = express();
+// Middleware para manejar JSON en las peticiones
 app.use(express.json());
 
 // Importamos el Router de Libros
-const librosRouter = require("./routes/libros");
+const librosRouter = require('./routes/libros');
 
-//Configuramos el middleware de autenticacion
-app.use("/api/libros", autenticacion,  librosRouter);
+// Importamos el Router de Usuarios
+const usuariosRoutes = require('./routes/usuarios');
 
+// Configuramos el middleware de autenticación en el Router de Libros
+app.use('/api/libros', autenticacion, librosRouter);
+
+// Configuramos el middleware de autenticación en el Router de Usuarios
+app.use('/usuarios', usuariosRoutes);
+
+// Configuramos el middleware de manejo de errores
 app.use(errorHandler);
 
-app.listen(3000, () => {
-  console.log("Servidor iniciado en el puerto 3000");
+// Iniciar el servidor
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor en funcionamiento en el puerto ${PORT}`);
 });
 
 module.exports = app;

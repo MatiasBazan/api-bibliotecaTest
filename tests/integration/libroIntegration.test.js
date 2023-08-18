@@ -8,10 +8,12 @@ jest.mock("express-oauth2-jwt-bearer");
 
 describe("Libro API", () => {
   test("GET /libros debería obtener todos los libros", async () => {
-    // Simular autenticación exitosa con scopes adecuados
-    oauth.auth.mockImplementation((req, res, next) => {
-      req.user = { scopes: ["read:libros"] };
-      next();
+
+    auth.mockImplementation((options) => {
+      return (req, res, next) => {
+        req.user = { scopes: ["read:libros"] };
+        next();
+      };
     });
 
     const mockLibros = [
